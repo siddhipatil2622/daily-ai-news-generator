@@ -103,7 +103,7 @@
     },
     {
       "parameters": {
-        "sendTo": "siddhipatil02607@gmail.com",
+        "sendTo": "your-email@example.com",
         "subject": "Ai news Generator",
         "message": "={{ $json.output.join('<hr><hr>') }}",
         "options": {}
