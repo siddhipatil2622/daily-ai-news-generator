@@ -1,0 +1,211 @@
+{
+  "name": "My workflow 4",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 17
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        0,
+        0
+      ],
+      "id": "aeda1a39-ae29-4bec-af48-4c9ceb7ae1c3",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "url": "https://techcrunch.com/feed/",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.rssFeedRead",
+      "typeVersion": 1.2,
+      "position": [
+        208,
+        0
+      ],
+      "id": "52dedbfd-7479-4f3a-a935-99153cd59d6b",
+      "name": "RSS Read"
+    },
+    {
+      "parameters": {
+        "maxItems": 3
+      },
+      "type": "n8n-nodes-base.limit",
+      "typeVersion": 1,
+      "position": [
+        336,
+        0
+      ],
+      "id": "50cb56a6-f149-4f60-ac75-757040ea7633",
+      "name": "Limit"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Analyze this technology news article.\n\nTitle: {{ $json.title }}\n\nContent: {{ $json.contentSnippet }}\n\nReturn HTML format:\n\n<h2>Title</h2>\n<p><b>Summary:</b> Short summary in 2-3 lines.</p>\n\n<ul>\n<li><b>Key Point 1:</b> ...</li>\n<li><b>Key Point 2:</b> ...</li>\n<li><b>Key Point 3:</b> ...</li>\n</ul>\n<hr>",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        544,
+        0
+      ],
+      "id": "d6f5ac2e-e5be-493d-b6e7-0f1b18f1aec4",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatCohere",
+      "typeVersion": 1,
+      "position": [
+        416,
+        208
+      ],
+      "id": "5cbd2607-98c1-43a0-aa5d-dad15ec44eaa",
+      "name": "Cohere Chat Model",
+      "credentials": {
+        "cohereApi": {
+          "id": "N2ABtnMKaQYMSKWO",
+          "name": "Cohere account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fieldsToAggregate": {
+          "fieldToAggregate": [
+            {
+              "fieldToAggregate": "output"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        832,
+        16
+      ],
+      "id": "f8b0fcdd-0da9-4782-b877-9b355023a8fa",
+      "name": "Aggregate"
+    },
+    {
+      "parameters": {
+        "sendTo": "siddhipatil02607@gmail.com",
+        "subject": "Ai news Generator",
+        "message": "={{ $json.output.join('<hr><hr>') }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        1040,
+        16
+      ],
+      "id": "3ac0468c-9454-4df6-9381-bfd26eea976e",
+      "name": "Send a message",
+      "webhookId": "e930ff36-6e78-4009-a329-4df5445ee233",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "ycljDj0J7B0vqfHf",
+          "name": "Gmail OAuth2 API"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "RSS Read",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "RSS Read": {
+      "main": [
+        [
+          {
+            "node": "Limit",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Limit": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Cohere Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Aggregate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "e05cd2cf-57e4-49a7-849c-6c7d7e9b5fe7",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "3553aae20dfa3f44171829830cc5bdd4df1977c9a6e747bf7ff49dd7c6670aff"
+  },
+  "nodeGroups": [],
+  "id": "WTsFl8mP31RNfhfN",
+  "tags": []
+}
